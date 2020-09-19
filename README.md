@@ -1,7 +1,7 @@
 # analysis_template
 Template of analysis made with AnalysisTree package
 
-#Building
+# Building
 
 Clone this repository with
 ```
@@ -27,7 +27,7 @@ Build the project
   make -j
 ```
 
-#Usage
+# Usage
 To use the program run
 ```
   ./analyse path/to/file.list
