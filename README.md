@@ -1,5 +1,11 @@
 # analysis_template
-Template of analysis made with AnalysisTree package
+Template of analysis made with AnalysisTree package.
+
+# Requirement
+
+* CMake 3.15
+* ROOT v6-20-04 built with C++17
+* AnalysisTree built with C++17
 
 # Building
 
