@@ -31,10 +31,11 @@ void AnalysisTask::Init(std::map<std::string, void *> &branch_map) {
   mass2_distribution_ = new TH1F("mass_squarred", "mass^2, [GeV]", 1024, -1, 13);
   p_distribution_ = new TH1F("p_distribution", "momentum, [GeV/c]", 1024, -50, 300);
 
-  PTvRAPIDITY_ = new TH2F("pT_vs_Rapidity", ";p_{T}, GeV/c;Rapidity", 250, 0, 1.8, 250, 0, 2); 
+  PTvRAPIDITY_ = new TH2F("Rapidity_vs_pT", ";Rapidity;p_{T}, GeV/c", 250, 0, 2, 250, 0, 1.8);
+  PTvPSEUDORAPIDITY_ = new TH2F("Pseudo-Rapidity_vs_pT", ";Psudo-Rapidity;p_{T}, GeV/c", 250, 0, 2, 250, 0, 1.8);
   PHIvPT_ = new TH2F("Phi_vs_pT", ";Phi;p_{T}, GeV", 256, -3.5, 3.5, 250, 0, 5);
-  MOMENTUMvBETA_ = new TH2F("Momentum_vs_beta", ";p, GeV/c; beta", 256, 0, 6, 256, 0, 1);
-  M2vMOMENTUM_ = new TH2F("Mass2_vs_Momentum", ";mass^2, GeV;p, GeV/c", 512, -10, 60, 256, 0, 6); // check it
+  MOMENTUMvBETA_ = new TH2F("Momentum_vs_beta", ";p, GeV/c; beta", 256, -3, 6, 256, 0, 1);
+  M2vMOMENTUM_ = new TH2F("Momentum_vs_Mass2", ";p, GeV/c;mass^2, GeV", 256, 0, 6, 512, -10, 60); // check it
   RAPIDITYvPHI_ = new TH2F("Rapidity_vs_Phi", ";Phi ;Rapidity", 256, -3.5, 3.5, 256, 0, 2);
 }
 
@@ -50,7 +51,7 @@ void AnalysisTask::Exec() {
     auto hit = meta_hits_->GetChannel(i); // getting matched with track hit in TOF-system
 	  auto charge = hit.GetField<int>(0);
     auto pT = track.GetPt(); // getting transverse momentum
-	  //auto eta = track.GetEta(); // getting pseudorapidity
+	  auto eta = track.GetEta(); // getting pseudorapidity
     auto rapidity = track.GetRapidity(); // getting rapidity
 	  auto p = track.GetP(); // getting absolute value of momentum
     auto phi = track.GetPhi(); // getting phi
@@ -60,9 +61,10 @@ void AnalysisTask::Exec() {
 	  m2 *= charge;
     // filling distributions
     PHIvPT_->Fill(phi, pT);
-    PTvRAPIDITY_->Fill(pT, rapidity);
-    MOMENTUMvBETA_->Fill(p, beta);
-    M2vMOMENTUM_->Fill(m2, p);
+    PTvRAPIDITY_->Fill(rapidity, pT);
+    PTvPSEUDORAPIDITY_->Fill(eta, pT);
+    MOMENTUMvBETA_->Fill(p*charge, beta); // *charge to see negatively charged
+    M2vMOMENTUM_->Fill(p, m2);
     RAPIDITYvPHI_->Fill(phi, rapidity);
     
   }
@@ -72,6 +74,7 @@ void AnalysisTask::Finish() {
   // Writing histograms to file
   
   PTvRAPIDITY_->Write();
+  PTvPSEUDORAPIDITY_->Write();
   PHIvPT_->Write();
   MOMENTUMvBETA_->Write();
   M2vMOMENTUM_->Write();

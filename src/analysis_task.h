@@ -47,6 +47,7 @@ private:
   
 TH2F* PHIvPT_;					// 2D histogram of phi angle versus transverse kick
 TH2F* PTvRAPIDITY_;				// 2D histogram of transverse kick versus rapidity
+TH2F* PTvPSEUDORAPIDITY_;
 TH2F* MOMENTUMvBETA_;				// 2D histogram of absolute momentum versus beta
 TH2F* M2vMOMENTUM_;				// 2D histogram of squarred mass versus absolute momentum
 TH2F* RAPIDITYvPHI_;				// 2D histogram of rapidity versus phi angle
