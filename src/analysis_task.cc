@@ -60,13 +60,15 @@ void AnalysisTask::Exec() {
     auto m2 = hit.GetField<float>(fields_id_.at(FIELDS::M2)); // getting mass squarred from meta_hits
 	  m2 *= charge;
     // filling distributions
+    if (pid == 211)//pie-mesons
+    {
     PHIvPT_->Fill(phi, pT);
     PTvRAPIDITY_->Fill(rapidity, pT);
     PTvPSEUDORAPIDITY_->Fill(eta, pT);
     MOMENTUMvBETA_->Fill(p*charge, beta); // *charge to see negatively charged
     M2vMOMENTUM_->Fill(p, m2);
     RAPIDITYvPHI_->Fill(phi, rapidity);
-    
+    }
   }
 }
 
