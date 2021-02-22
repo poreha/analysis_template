@@ -34,8 +34,8 @@ void AnalysisTask::Init(std::map<std::string, void *> &branch_map) {
   PTvRAPIDITY_ = new TH2F("Rapidity_vs_pT", ";Rapidity;p_{T}, GeV/c", 250, 0, 2, 250, 0, 1.8);
   PTvPSEUDORAPIDITY_ = new TH2F("Pseudo-Rapidity_vs_pT", ";Psudo-Rapidity;p_{T}, GeV/c", 250, 0, 2, 250, 0, 1.8);
   PHIvPT_ = new TH2F("Phi_vs_pT", ";Phi;p_{T}, GeV", 256, -3.5, 3.5, 250, 0, 5);
-  MOMENTUMvBETA_ = new TH2F("Momentum_vs_beta", ";p, GeV/c; beta", 256, -3, 6, 256, 0, 1);
-  M2vMOMENTUM_ = new TH2F("Momentum_vs_Mass2", ";p, GeV/c;mass^2, GeV", 256, 0, 6, 512, -10, 60); // check it
+  MOMENTUMvBETA_ = new TH2F("Momentum_vs_beta", ";p, GeV/c; beta", 256, -3, 6, 256, 0, 1.3);
+  M2vMOMENTUM_ = new TH2F("Momentum_vs_Mass2", ";p, GeV/c;mass^2, GeV", 256, -6, 6, 512, -10, 60); // check it
   RAPIDITYvPHI_ = new TH2F("Rapidity_vs_Phi", ";Phi ;Rapidity", 256, -3.5, 3.5, 256, 0, 2);
 }
 
@@ -58,16 +58,33 @@ void AnalysisTask::Exec() {
 
     auto beta = hit.GetField<float>(fields_id_.at(FIELDS::BETA)); // getting beta from meta_hits
     auto m2 = hit.GetField<float>(fields_id_.at(FIELDS::M2)); // getting mass squarred from meta_hits
-	  m2 *= charge;
+    
+    // play w filters and watch how phi-distr reacts
+    
+    bool pt2 = event_header_->GetField<bool>(5); // physical_trigger_2 (id=5)
+    bool goodVertexCand = event_header_->GetField<bool>(1); // good_vertex_candidate (id=1)
+    bool kGoodTrigger = event_header_->GetField<bool>(13); // good_trigger (id=13)
+    bool kNoVeto = event_header_->GetField<bool>(15); // no_veto (id=15)
+    float dca_xy = track.GetR(); // does not work!
     // filling distributions
-    if (pid == 211)//pie-mesons
+    /*
+      filter: pie+ 211
+              pie0 111
+              proton 2212
+              K0 311
+              K+ 321
+              e- 11
+    */
+    if (pid == 2212)
     {
+        if (dca_xy < 15) { // does not work
     PHIvPT_->Fill(phi, pT);
     PTvRAPIDITY_->Fill(rapidity, pT);
     PTvPSEUDORAPIDITY_->Fill(eta, pT);
     MOMENTUMvBETA_->Fill(p*charge, beta); // *charge to see negatively charged
     M2vMOMENTUM_->Fill(p, m2);
     RAPIDITYvPHI_->Fill(phi, rapidity);
+      }
     }
   }
 }
