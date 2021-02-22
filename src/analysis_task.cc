@@ -80,7 +80,7 @@ void AnalysisTask::Exec() {
     */
     if (pid == 2212)
     {
-        if (dca_xy < 15) { // does not work
+        if (kGoodTrigger && kNoVeto) { 
     PHIvPT_->Fill(phi, pT);
     PTvRAPIDITY_->Fill(rapidity, pT);
     PTvPSEUDORAPIDITY_->Fill(eta, pT);
