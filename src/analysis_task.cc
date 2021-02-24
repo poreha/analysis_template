@@ -68,7 +68,7 @@ void AnalysisTask::Exec() {
     bool goodVertexCand = event_header_->GetField<bool>(1); // good_vertex_candidate (id=1)
     bool kGoodTrigger = event_header_->GetField<bool>(13); // good_trigger (id=13)
     bool kNoVeto = event_header_->GetField<bool>(15); // no_veto (id=15)
-    float dca_xy = track.GetR(); // does not work!
+    //float dca_xy = track.GetR(); // does not work!
     // filling distributions
     /*
       filter: pie+ 211
@@ -80,7 +80,7 @@ void AnalysisTask::Exec() {
     */
     if (pid == 2212)
     {
-        if (dca_xy < 15) { // does not work
+        if (pt2 && kNoVeto && kGoodTrigger) { 
     PHIvPT_->Fill(phi, pT);
     PTvRAPIDITY_->Fill(rapidity, pT);
     PTvPSEUDORAPIDITY_->Fill(eta, pT);
