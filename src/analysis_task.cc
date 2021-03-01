@@ -1,5 +1,6 @@
 //
 // Created by mikhail on 6/16/20.
+// Edited by alexey on 2/25/21
 //
 
 #include "analysis_task.h"
@@ -23,6 +24,8 @@ void AnalysisTask::Init(std::map<std::string, void *> &branch_map) {
   fields_id_.insert(std::make_pair(FIELDS::HITS_TOF, event_header_config.GetFieldId("selected_tof_hits")));
   fields_id_.insert(std::make_pair(FIELDS::BETA, meta_hits_config.GetFieldId("beta"))); //new edit looking for beta
   fields_id_.insert(std::make_pair(FIELDS::M2, meta_hits_config.GetFieldId("mass2")));
+  fields_id_.insert(std::make_pair(FIELDS::CHARGE, meta_hits_config.GetFieldId("charge")));
+  fields_id_.insert(std::make_pair(FIELDS::PT2, event_header_config.GetFieldId("physical_trigger_2")));
   // initializing histograms
   
   tof_multiplicity_distribution_ = new TH1F( "tof_multiplicity", ";TOF hits;counts", 100, 0, 100 );
@@ -33,12 +36,13 @@ void AnalysisTask::Init(std::map<std::string, void *> &branch_map) {
   mass2_distribution_ = new TH1F("mass_squarred", "mass^2, [GeV]", 1024, -1, 13);
   p_distribution_ = new TH1F("p_distribution", "momentum, [GeV/c]", 1024, -50, 300);
   */
-  PTvRAPIDITY_ = new TH2F("Rapidity_vs_pT", ";Rapidity;p_{T}, GeV/c", 250, 0, 2, 250, 0, 1.8);
-  PTvPSEUDORAPIDITY_ = new TH2F("Pseudo-Rapidity_vs_pT", ";Psudo-Rapidity;p_{T}, GeV/c", 250, 0, 2, 250, 0, 1.8);
-  PHIvPT_ = new TH2F("Phi_vs_pT", ";Phi;p_{T}, GeV", 256, -3.5, 3.5, 250, 0, 5);
-  MOMENTUMvBETA_ = new TH2F("Momentum_vs_beta", ";p, GeV/c; beta", 256, -3, 6, 256, 0, 1.3);
-  M2vMOMENTUM_ = new TH2F("Momentum_vs_Mass2", ";p, GeV/c;mass^2, GeV", 256, -6, 6, 512, -10, 60); // check it
-  RAPIDITYvPHI_ = new TH2F("Rapidity_vs_Phi", ";Phi ;Rapidity", 256, -3.5, 3.5, 256, 0, 2);
+  PTvRAPIDITY_ = new TH2F("Rapidity_vs_pT", ";Rapidity;p_{T}, GeV/c", 250, 0, 2.5, 250, 0, 2.);
+  PTvPSEUDORAPIDITY_ = new TH2F("Pseudo-Rapidity_vs_pT", ";Psudo-Rapidity;p_{T}, GeV/c", 250, 0, 2.5, 250, 0, 2.);
+  
+  //PHIvPT_ = new TH2F("Phi_vs_pT", ";Phi;p_{T}, GeV", 256, -3.5, 3.5, 250, 0, 5);
+  //MOMENTUMvBETA_ = new TH2F("Momentum_vs_beta", ";p, GeV/c; beta", 256, -3, 6.2, 256, 0, 1.3);
+  //M2vMOMENTUM_ = new TH2F("Momentum_vs_Mass2", ";p, GeV/c;mass^2, GeV", 256, -6, 6, 512, -10, 60); // check it
+  //RAPIDITYvPHI_ = new TH2F("Rapidity_vs_Phi", ";Phi ;Rapidity", 256, -3.5, 3.5, 256, 0, 2);
 }
 
 void AnalysisTask::Exec() {
@@ -52,16 +56,17 @@ void AnalysisTask::Exec() {
 
     //int match_meta_hit = mdc_meta_matching_->GetMatchDirect(i); // getting index of matched with track TOF-system hit
     auto hit = meta_hits_->GetChannel(i); // getting matched with track hit in TOF-system
-	  auto charge = hit.GetField<int>(0);
+	  
     auto pT = track.GetPt(); // getting transverse momentum
 	  auto eta = track.GetEta(); // getting pseudorapidity
     auto rapidity = track.GetRapidity(); // getting rapidity
 	  auto p = track.GetP(); // getting absolute value of momentum
     auto phi = track.GetPhi(); // getting phi
-  
+
+    auto charge = hit.GetField<int>(fields_id_.at(FIELDS::CHARGE));
     auto beta = hit.GetField<float>(fields_id_.at(FIELDS::BETA)); // getting beta from meta_hits
     auto m2 = hit.GetField<float>(fields_id_.at(FIELDS::M2)); // getting mass squarred from meta_hits
-    
+    /*
     // play w filters and watch how phi-distr reacts
     
     bool pt2 = event_header_->GetField<bool>(5); // physical_trigger_2 (id=5)
@@ -69,6 +74,7 @@ void AnalysisTask::Exec() {
     bool kGoodTrigger = event_header_->GetField<bool>(13); // good_trigger (id=13)
     bool kNoVeto = event_header_->GetField<bool>(15); // no_veto (id=15)
     //float dca_xy = track.GetR(); // does not work!
+    */
     // filling distributions
     /*
       filter: pie+ 211
@@ -78,17 +84,17 @@ void AnalysisTask::Exec() {
               K+ 321
               e- 11
     */
-    if (pid == 2212)
-    {
-        if (pt2 && kNoVeto && kGoodTrigger) { 
-    PHIvPT_->Fill(phi, pT);
-    PTvRAPIDITY_->Fill(rapidity, pT);
-    PTvPSEUDORAPIDITY_->Fill(eta, pT);
-    MOMENTUMvBETA_->Fill(p/charge, beta); // charge to see negatively charged
-    M2vMOMENTUM_->Fill(p/charge, m2);
-    RAPIDITYvPHI_->Fill(phi, rapidity);
-      }
+    
+    if(pid == 2212){
+      PTvRAPIDITY_->Fill(rapidity, pT);
+      PTvPSEUDORAPIDITY_->Fill(eta, pT);
     }
+    //PHIvPT_->Fill(phi, pT);
+    //MOMENTUMvBETA_->Fill(p/charge, beta); // charge to see negatively charged
+    //M2vMOMENTUM_->Fill(p/charge, m2);
+    //RAPIDITYvPHI_->Fill(phi, rapidity);
+    
+    
   }
 }
 
@@ -97,10 +103,10 @@ void AnalysisTask::Finish() {
   
   PTvRAPIDITY_->Write();
   PTvPSEUDORAPIDITY_->Write();
-  PHIvPT_->Write();
-  MOMENTUMvBETA_->Write();
-  M2vMOMENTUM_->Write();
-  RAPIDITYvPHI_->Write();
+  //PHIvPT_->Write();
+  //MOMENTUMvBETA_->Write();
+  //M2vMOMENTUM_->Write();
+  //RAPIDITYvPHI_->Write();
   //tof_multiplicity_distribution_->Write();
   //pT_distribution_->Write();
   //beta_distribution_->Write();

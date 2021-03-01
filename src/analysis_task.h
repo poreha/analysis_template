@@ -27,7 +27,10 @@ private:
  enum class FIELDS{ // enumerator to fast access to detectors' fields
    HITS_TOF, 	// Hits in TOF-system
    M2,		// Squarred mass derived from forward wall detectors (meta_hits branch)
-   BETA		// Beta derived from TOF-system (meta_hits branch)
+   BETA,	// Beta derived from TOF-system (meta_hits branch)
+   CHARGE,	// Charge from curve (meta_hits branch)
+   PT2,		// Physical Trigger 2 (event_header branch)
+   VERT_CAN
   };
   std::map<FIELDS, int> fields_id_; // map to match detectors' fields with enumerator
 
