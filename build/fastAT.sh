@@ -1,5 +1,6 @@
 #!/bin/bash
 # Builds AT template prog, performs analysis and opens rootbrowse
+cmake ..
 make -j2
-./analyse ../lists/AuAu_1_23AGeV_GEN9_v4.list
+./analyse ../lists/AgAg_1_58A_GeV.list
 rootbrowse output.root

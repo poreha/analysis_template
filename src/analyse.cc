@@ -17,7 +17,7 @@ int main(int n_args, char** args){
   manager.AddTask(analysis_task);
   manager.SetOutFileName("output.root");
   manager.Init();
-  manager.Run(-1);
+  manager.Run(20000);
   manager.Finish();
   return 0;
 }
