@@ -34,8 +34,13 @@ private:
    TOF,		// Time of Flight (meta_hits branch)
    PATH_LEN
   };
+  enum class uPARTICLES{
+    PROTON,
+    KAON
+  };
   
   std::map<FIELDS, int> fields_id_; // map to match detectors' fields with enumerator
+  std::map<uPARTICLES, int> particle_id_;
 
   /* pointers to link tree's branches with */
   EventHeader* event_header_{nullptr}; 		// event info
@@ -65,6 +70,11 @@ private:
   TH2F* M2vMOMENTUM_;				// 2D histogram of squarred mass versus absolute momentum
   TH2F* RAPIDITYvPHI_;				// 2D histogram of rapidity versus phi angle
 
+  TH2F* M2vMOMENTUM_PID_PRIM;
+  TH2F* M2vMOMENTUM_PID_SEC;
+  TH2F* M2vMOMENTUM_PDG_PRIM;
+  TH2F* M2vMOMENTUM_PDG_SEC;
+
   TH2F* PID_RECO_;
   TH2F* PID_PRIM_;
   TH2F* PID_SEC_;
@@ -75,7 +85,6 @@ private:
   TH2F* GEN_;
   TH2F* GEN_PRIM_;
   TH2F* GEN_SEC_;
-  TH2F* MATCHED_PTvY_;
 
   TH2F* PvTOF_;
   TH2F* PvPathLen_;
